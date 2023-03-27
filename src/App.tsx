@@ -1,10 +1,37 @@
-import { Component } from 'solid-js';
+import { Component, createSignal, createUniqueId } from 'solid-js';
 import { AiOutlineMessage } from 'solid-icons/ai';
 import { FaRegularHeart, FaRegularImage } from 'solid-icons/fa';
 import { FiTrash } from 'solid-icons/fi';
 import MainLayout from './components/layouts/MainLayout';
 
+type Glide = {
+  content: string;
+};
+
 const App: Component = () => {
+  const [content, setContent] = createSignal('');
+  const [glides, setGlides] = createSignal<Glide[]>([]);
+
+  const creatGlide = () => {
+    const glide = {
+      id: createUniqueId(),
+      content: content(),
+      user: {
+        nicName: 'Yevhen',
+        avatar:
+          'https://yt3.ggpht.com/oW_ksWUfj0om18aSwMiv-WT6XJeIvzw1AilLXWQfpWWJifS5q96MebQEeCBNh7oU9K_xRITAuA=s88-c-k-c0x00ffffff-no-rj-mo',
+      },
+      likesCount: 0,
+      subglidesCount: 0,
+      date: new Date(),
+    };
+
+    setGlides([glide, ...glides()]);
+    setContent('');
+
+    console.log(JSON.stringify(glides()));
+  };
+
   return (
     <MainLayout>
       {/* HOME PAGE START */}
@@ -21,6 +48,10 @@ const App: Component = () => {
         <div class="flex-it flex-grow">
           <div class="flex-it">
             <textarea
+              value={content()}
+              onInput={(e) => {
+                setContent(e.currentTarget.value);
+              }}
               name="content"
               rows="1"
               id="glide"
@@ -37,6 +68,7 @@ const App: Component = () => {
             </div>
             <div class="flex-it w-32 mt-3 cursor-pointer">
               <button
+                onClick={creatGlide}
                 type="button"
                 class="
                             disabled:cursor-not-allowed disabled:bg-gray-400
