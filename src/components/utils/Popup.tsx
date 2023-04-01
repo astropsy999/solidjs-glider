@@ -1,5 +1,6 @@
 import { Component, createEffect, createSignal, onCleanup, onMount, Show } from 'solid-js';
 import { Portal } from 'solid-js/web';
+import pageSize from '../../reactive/pageSize';
 
 type Props = {
   opener: Component;
@@ -12,19 +13,17 @@ const Popup: Component<Props> = ({ opener: Opener }) => {
   let popup: HTMLDivElement;
 
   createEffect(() => {
-    if (isOpen()) {
+    if (isOpen() && pageSize.value()) {
       adjustPopup();
     }
   });
 
   onMount(()=> {
-    window.addEventListener('resize', closePopup)
-    window.addEventListener('click', adjustPopup)
+    window.addEventListener('click', closePopup);
   })
 
   onCleanup(() => {
-    window.removeEventListener('resize', closePopup)
-    window.removeEventListener('click', adjustPopup)
+    window.removeEventListener('click', closePopup);
   })
 
   const closePopup =(e: MouseEvent) => {
@@ -56,7 +55,7 @@ const Popup: Component<Props> = ({ opener: Opener }) => {
         <Opener />
       </div>
       <Show when={isOpen()}>
-        <Portal mount={document.getElementById('popup') as Node}>
+        <Portal mount={document.getElementById('popups') as Node}>
           <div
             ref={popup!}
             class="flex-it hover:cursor-pointer fixed bg-gray-800 text-white popup z-10 rounded-2xl border-gray-700 border transition duration-1000"

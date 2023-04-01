@@ -4,7 +4,7 @@ import AppRoutes from './router';
 const App: Component = () => {
   return (
     <>
-    <div id="popup"></div>
+    <div id="popups"></div>
       <AppRoutes />
     </>
   );
