@@ -10,13 +10,13 @@ export const links = [
   { name: 'Profile', href: '/profile', icon: <CgProfile size={SIZE} /> },
   { name: 'More', href: '/more', icon: <CgMoreO size={SIZE} /> },
   {
-    name: 'Notification',
-    href: '/notification',
+    name: 'Login', //Notification
+    href: '/auth/login', // /notification
     icon: <IoNotificationsCircleOutline size={SIZE} />,
   },
   {
-    name: 'Discover',
-    href: '/discover',
+    name: 'Register', //Discover
+    href: '/auth/register', // discover
     icon: <RiMapCompassDiscoverLine size={SIZE} />,
   },
 ];

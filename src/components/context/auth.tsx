@@ -1,5 +1,6 @@
-import { Accessor, Component, ParentComponent, createContext, createSignal, onCleanup, onMount, useContext } from "solid-js";
+import { Accessor, Component, ParentComponent, Show, createContext, createSignal, onCleanup, onMount, useContext } from "solid-js";
 import {createStore} from 'solid-js/store'
+import Loader from "../utils/Loader";
 
 type AuthStateCtxValues = {
     isAuthenticated: boolean
@@ -21,8 +22,10 @@ const AuthProvider: ParentComponent = (props) => {
 onMount(async () => {
   try {
     await authenticateUser();
+     setStore('isAuthenticated', true);
   } catch (error: any) {
     console.log(error);
+     setStore('isAuthenticated', false);  
   } finally {
     setStore('loading', false)
   }
@@ -31,9 +34,8 @@ onMount(async () => {
 const authenticateUser = async() => {
   return new Promise((res, rej) => {
     setTimeout(() => {
-        setStore("isAuthenticated", true)
-        // res(true)
-        rej("problem")
+        res(true)
+        // rej("problem")
     }, 1000)
   })
 }
@@ -43,10 +45,10 @@ onCleanup(() => {
 })
 
 return (
-  <AuthStateContext.Provider
-    value={store}
-  >
-    {props.children}
+  <AuthStateContext.Provider value={store}>
+    <Show when={store.loading} fallback={props.children}>
+      <Loader size={100} />
+    </Show>
   </AuthStateContext.Provider>
 );
 };
