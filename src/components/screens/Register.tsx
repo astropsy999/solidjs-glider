@@ -1,10 +1,12 @@
 import { Component } from 'solid-js';
-import useForm from '../../hooks/useForm';
+import useForm, { maxLengthValidator } from '../../hooks/useForm';
 import { RegisterForm } from '../../types/Form';
+
+
 
 const RegisterScreen: Component = () => {
 
-  const { handleInput, submitForm } = useForm<RegisterForm>({
+  const { handleInput, submitForm, validate } = useForm<RegisterForm>({
     fullName: '',
     nickName: '',
     avatar: '',
@@ -17,7 +19,7 @@ const RegisterScreen: Component = () => {
     console.log('formData: ', formData);
 
   }
-  
+
   return (
     <div class="flex-it justify-center items-center h-full">
       <div class="text-white text-4xl font-bold">Glider - Create Account</div>
@@ -33,6 +35,7 @@ const RegisterScreen: Component = () => {
                     </label>
                     <input
                       onInput={handleInput}
+                      use:validate={[maxLengthValidator]}
                       type="text"
                       name="fullName"
                       id="fullName"
@@ -49,6 +52,7 @@ const RegisterScreen: Component = () => {
                     </label>
                     <input
                       onInput={handleInput}
+                      use:validate={[maxLengthValidator]}
                       type="text"
                       name="nickName"
                       id="nickName"
