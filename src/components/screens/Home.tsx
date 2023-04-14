@@ -3,10 +3,13 @@ import { Component, createSignal, createUniqueId, For } from 'solid-js';
 import GlidePost from '../glides/GlidePost';
 import MainLayout from '../layouts/MainLayout';
 import { Glide } from '../../types/Glide';
+import { createStore, produce } from 'solid-js/store';
 
 const HomeScreen: Component = () => {
   const [content, setContent] = createSignal('');
-  const [glides, setGlides] = createSignal<Glide[]>([]);
+  const [glides, setGlides] = createStore({
+    items: [] as Glide[]
+  });
 
   const creatGlide = () => {
     const glide = {
@@ -22,10 +25,16 @@ const HomeScreen: Component = () => {
       date: new Date(),
     };
 
-    setGlides([glide, ...glides()]);
+    // setGlides("items", produce((items)=> {
+    //   items.push(glide)
+    // }));
+
+    setGlides(produce((glides) => {
+      glides.items.unshift(glide)
+    }))
     setContent('');
 
-    console.log(JSON.stringify(glides()));
+    // console.log(JSON.stringify(glides()));
   };
 
   return (
@@ -80,7 +89,7 @@ const HomeScreen: Component = () => {
         {/* MESSENGER END */}
       </div>
       <div class="h-px bg-gray-700 my-1" />
-      <For each={glides()}>{(glide) => <GlidePost glide={glide} />}</For>
+      <For each={glides.items}>{(glide) => <GlidePost glide={glide} />}</For>
 
       {/* HOME PAGE END */}
     </MainLayout>

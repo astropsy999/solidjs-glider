@@ -1,12 +1,12 @@
-import { Component } from 'solid-js';
-import useForm, { maxLengthValidator } from '../../hooks/useForm';
+import { Component, Show } from 'solid-js';
+import useForm, { FormError, maxLengthValidator, upperCaseLetterValidator } from '../../hooks/useForm';
 import { RegisterForm } from '../../types/Form';
 
 
 
 const RegisterScreen: Component = () => {
 
-  const { handleInput, submitForm, validate } = useForm<RegisterForm>({
+  const { handleInput, submitForm, validate, errors } = useForm<RegisterForm>({
     fullName: '',
     nickName: '',
     avatar: '',
@@ -35,15 +35,16 @@ const RegisterScreen: Component = () => {
                     </label>
                     <input
                       onInput={handleInput}
-                      use:validate={[maxLengthValidator]}
+                      use:validate={[
+                        maxLengthValidator,
+                        upperCaseLetterValidator,
+                      ]}
                       type="text"
                       name="fullName"
                       id="fullName"
                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     />
-                    <div class="flex-it grow text-xs bg-red-400 text-white p-3 pl-3 mt-1 rounded-md">
-                      Error Error Beep Beep!
-                    </div>
+                    <FormError>{errors['fullName']}</FormError>
                   </div>
 
                   <div class="flex-it py-2">
@@ -52,12 +53,16 @@ const RegisterScreen: Component = () => {
                     </label>
                     <input
                       onInput={handleInput}
-                      use:validate={[maxLengthValidator]}
+                      use:validate={[
+                        maxLengthValidator,
+                        upperCaseLetterValidator,
+                      ]}
                       type="text"
                       name="nickName"
                       id="nickName"
                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     />
+                    <FormError>{errors['nickName']}</FormError>
                   </div>
 
                   <div class="flex-it py-2">

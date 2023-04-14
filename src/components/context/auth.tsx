@@ -32,10 +32,10 @@ onMount(async () => {
 })
 
 const authenticateUser = async() => {
-  return new Promise((res, rej) => {
+  return new Promise((resolve, reject) => {
     setTimeout(() => {
-        // res(true)
-        rej("problem")
+      // resolve(true);
+      reject("problem")
     }, 1000)
   })
 }

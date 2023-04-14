@@ -1,6 +1,6 @@
-import { createStore } from "solid-js/store";
-import { Form, GliderInputEvent, RegisterForm, SubmitCallback } from "../types/Form";
-import { Accessor } from "solid-js";
+import { createStore, produce } from "solid-js/store";
+import { Form, FormErrors, GliderInputEvent, RegisterForm, SubmitCallback } from "../types/Form";
+import { Accessor, Component, For, ParentComponent } from "solid-js";
 
 declare module 'solid-js' {
   namespace JSX {
@@ -11,6 +11,18 @@ declare module 'solid-js' {
 }
 
 type Validator = (element: HTMLInputElement, ...rest: any[]) => string
+
+export const FormError: ParentComponent = (props) => {
+  const errors = () => props.children as string[] || []
+  return  (
+              <For each={errors()}>
+                  {(error) =>
+                    <div class="flex-it grow text-xs bg-red-400 text-white p-3 pl-3 mt-1 rounded-md">{error}</div>
+                  }
+              </For>
+                   )
+
+}
 
   export const maxLengthValidator: Validator = (
     element: HTMLInputElement,
@@ -28,13 +40,12 @@ type Validator = (element: HTMLInputElement, ...rest: any[]) => string
 
     if(value.length === 0) {return ''}
 
-    return value[0] !== value[0].toUpperCase() ? `${element.name} first letter should be uppercased!`
-  }
+    return value[0] !== value[0].toUpperCase() ? `${element.name} first letter should be uppercased!`: ''}
 
 const useForm = <T extends Form>(initialForm: T) => {
 
      const [form, setForm] = createStore(initialForm);
-     const [errors, setErrors] = createStore<Form>()
+     const [errors, setErrors] = createStore<FormErrors>()
 
      const handleInput = (e: GliderInputEvent) => {
        const { name, value } = e.currentTarget;
@@ -56,18 +67,20 @@ const useForm = <T extends Form>(initialForm: T) => {
 
      const checkValidity = (element: HTMLInputElement, validators: Validator[]) => () => {
 
+      setErrors(element.name, [])
+
         for (const validator of validators) {
             const message = validator(element);
 
             if (!!message) {
-              setErrors(element.name, message);
-            } else {
-              setErrors(element.name, '');
-            }
+              setErrors(produce(errors => {
+                errors[element.name].push(message)
+              }));
+            } 
         }
      };
     return {
-        handleInput, submitForm, validate
+        handleInput, submitForm, validate, errors
     }
 
 }
