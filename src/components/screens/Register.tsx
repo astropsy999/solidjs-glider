@@ -1,5 +1,5 @@
-import { Component, Show } from 'solid-js';
-import useForm, { FormError, maxLengthValidator, minLengthValidator, requiredValidfator, upperCaseLetterValidator } from '../../hooks/useForm';
+import { Component } from 'solid-js';
+import useForm, { FormError, compareWith, minLengthValidator, requiredValidfator, upperCaseLetterValidator } from '../../hooks/useForm';
 import { RegisterForm } from '../../types/Form';
 
 
@@ -114,7 +114,7 @@ const RegisterScreen: Component = () => {
                     </label>
                     <input
                       onInput={handleInput}
-                      use:validate={[requiredValidfator]}
+                      use:validate={[requiredValidfator, (el)=> compareWith(el, "password")]}
                       type="password"
                       name="passwordConfirmation"
                       id="passwordConfirmation"
