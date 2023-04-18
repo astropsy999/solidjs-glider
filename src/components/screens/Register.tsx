@@ -1,8 +1,7 @@
-import { Component, onMount } from 'solid-js';
+import { Component } from 'solid-js';
 import useForm, { FormError, compareWith, minLengthValidator, requiredValidfator, upperCaseLetterValidator } from '../../hooks/useForm';
-import { RegisterForm } from '../../types/Form';
 import useRegister from '../../hooks/useRegister';
-import { getUsers } from '../../db';
+import { RegisterForm } from '../../types/Form';
 
 
 
@@ -17,16 +16,13 @@ const RegisterScreen: Component = () => {
     passwordConfirmation: '',
   });
 
-  const {register} = useRegister()
+  const {registerUser} = useRegister()
 
   const onFormSubmit = (formData: RegisterForm) => {
-    register(formData)
+    registerUser(formData);
   }
 
-  onMount(async() => {
-    const users = await getUsers()
-    console.log('users: ', users);
-  })
+
 
   return (
     <div class="flex-it justify-center items-center h-full">
