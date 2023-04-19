@@ -4,6 +4,8 @@ import { createStore } from 'solid-js/store';
 import { fbAuth } from "../../db";
 import { User } from '../../types/User';
 import Loader from "../utils/Loader";
+import { useLocation, useNavigate } from "@solidjs/router";
+import { getUser } from "../../api/auth";
 
 type AuthStateCtxValues = {
   isAuthenticated: boolean;
@@ -21,22 +23,25 @@ const AuthStateContext = createContext<AuthStateCtxValues>();
 
 const AuthProvider: ParentComponent = (props) => {
 
-    const [store, setStore] = createStore(initialState())
+    const [store, setStore] = createStore<AuthStateCtxValues>(initialState());
+    const location = useLocation()
+    const navigate = useNavigate()
 
 onMount(() => {
   setStore('loading', true)
   listenToAuthChanges()
 })
 
-const authenticateUser = async() => {
-
-}
 
 const listenToAuthChanges = () => {
-  onAuthStateChanged(fbAuth, (user) => {
+  onAuthStateChanged(fbAuth, async (user) => {
     if (!!user) {
+      const glideUser = await getUser(user.uid)
       setStore('isAuthenticated', true);
-      setStore('user', user as any);
+      setStore('user', glideUser);
+      if(location.pathname.includes('/auth')) {
+        navigate('/', {replace: true})
+      }
     } else {
       setStore('isAuthenticated', false);
       setStore('user', null);

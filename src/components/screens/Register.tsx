@@ -1,7 +1,7 @@
 import { Component } from 'solid-js';
 import useForm, { FormError, compareWith, minLengthValidator, requiredValidfator, upperCaseLetterValidator } from '../../hooks/useForm';
-import useRegister from '../../hooks/useRegister';
 import { RegisterForm } from '../../types/Form';
+import useAuth from '../../hooks/useAuth';
 
 
 
@@ -16,10 +16,10 @@ const RegisterScreen: Component = () => {
     passwordConfirmation: '',
   });
 
-  const {registerUser} = useRegister()
+  const {authUser, loading} = useAuth("register")
 
   const onFormSubmit = (formData: RegisterForm) => {
-    registerUser(formData);
+    authUser(formData);
   }
 
 
@@ -136,6 +136,7 @@ const RegisterScreen: Component = () => {
               </div>
               <div class="flex-it py-2">
                 <button
+                disabled={loading()}
                   onClick={submitForm(onFormSubmit)}
                   type="button"
                   class="

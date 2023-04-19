@@ -1,11 +1,11 @@
 import { A } from '@solidjs/router';
 import { Component } from 'solid-js';
+import useAuth from '../../hooks/useAuth';
 import useForm, { FormError, requiredValidfator } from '../../hooks/useForm';
-import { AuthForm, RegisterForm } from '../../types/Form';
-import useLogin from '../../hooks/useLogin';
+import { AuthForm } from '../../types/Form';
 
 const LoginScreen: Component = () => {
-  const {loginUser} = useLogin()
+  const {authUser, loading} = useAuth("login")
    const { handleInput, submitForm, validate, errors } = useForm<AuthForm>({
      email: '',
      password: '',
@@ -13,7 +13,7 @@ const LoginScreen: Component = () => {
 
 
    const onFormSubmit = (formData: AuthForm) => {
-    loginUser(formData);
+    authUser(formData);
    };
  
   return (
@@ -63,6 +63,7 @@ const LoginScreen: Component = () => {
               </div>
               <div class="flex-it py-2">
                 <button
+                  disabled={loading()}
                   onClick={submitForm(onFormSubmit)}
                   type="button"
                   class="
