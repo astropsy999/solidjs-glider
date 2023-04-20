@@ -4,8 +4,10 @@ import GlidePost from '../glides/GlidePost';
 import MainLayout from '../layouts/MainLayout';
 import { Glide } from '../../types/Glide';
 import { createStore, produce } from 'solid-js/store';
+import { useAuthState } from '../context/auth';
 
 const HomeScreen: Component = () => {
+  const {user} = useAuthState()!
   const [content, setContent] = createSignal('');
   const [glides, setGlides] = createStore({
     items: [] as Glide[]
@@ -29,9 +31,9 @@ const HomeScreen: Component = () => {
     //   items.push(glide)
     // }));
 
-    setGlides(produce((glides) => {
-      glides.items.unshift(glide)
-    }))
+    // setGlides(produce((glides) => {
+    //   glides.items.unshift(glide)
+    // }))
     setContent('');
 
     // console.log(JSON.stringify(glides()));
@@ -45,7 +47,7 @@ const HomeScreen: Component = () => {
           <div class="w-12 h-12 overflow-visible cursor-pointer transition duration-200 hover:opacity-80">
             <img
               class="rounded-full"
-              src="https://www.pinclipart.com/picdir/middle/133-1331433_free-user-avatar-icons-happy-flat-design-png.png"
+              src={user?.avatar}
             ></img>
           </div>
         </div>
