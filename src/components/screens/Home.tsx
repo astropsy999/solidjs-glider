@@ -5,9 +5,11 @@ import MainLayout from '../layouts/MainLayout';
 import { Glide } from '../../types/Glide';
 import { createStore, produce } from 'solid-js/store';
 import { useAuthState } from '../context/auth';
+import { useDispatch } from '../context/ui';
 
 const HomeScreen: Component = () => {
   const {user} = useAuthState()!
+  const {addSnackbar} = useDispatch()
   const [content, setContent] = createSignal('');
   const [glides, setGlides] = createStore({
     items: [] as Glide[]
@@ -34,6 +36,7 @@ const HomeScreen: Component = () => {
     // setGlides(produce((glides) => {
     //   glides.items.unshift(glide)
     // }))
+    addSnackbar({message: "Glide added successfully", type: "success"})
     setContent('');
 
     // console.log(JSON.stringify(glides()));

@@ -1,5 +1,5 @@
-import { ParentComponent, createContext, useContext } from "solid-js"
-import { createStore } from "solid-js/store";
+import { ParentComponent, createContext, createUniqueId, useContext } from "solid-js"
+import { createStore, produce } from "solid-js/store";
 
 export type SnackbarMessage = {
     message: string,
@@ -11,25 +11,53 @@ type UIState = {
     snackbars: SnackbarMessage[]
 }
 
+type UIDispatch = {
+    addSnackbar: (s: SnackbarMessage) => void
+    removeSnackbar: (id: string) => () => void
+}
+
 const UIStateContext = createContext<UIState>();
+const UIDistaptchContext = createContext<UIDispatch>()
 
 const defaultState = (): UIState => ({
-  snackbars: [
-    { message: 'Hello Wold', type: 'success' },
-    { message: 'Oops', type: 'error' },
-    { message: 'Double check', type: 'warning' },
-  ],
+  snackbars: []
 });
+
+
 
 const UIProvider: ParentComponent = (props) => {
     const [store, setStore] = createStore(defaultState());
+    const addSnackbar = (snackbar: SnackbarMessage) => {
+      setStore(
+        'snackbars',
+        produce((snackbars) => {
+          snackbars.push({id: createUniqueId(), ...snackbar});
+        }),
+      );
+    };
+
+    const removeSnackbar = (id: string) => () => {
+       setStore("snackbars", produce((snackbars)=> {
+            const index = snackbars.findIndex((snackbar)=> snackbar.id === id)
+
+            if(index > -1) {
+                snackbars.splice(index, 1)
+            }
+       }))
+    }
+   
     return (
-        <UIStateContext.Provider value={store}>
-            {props.children}
-        </UIStateContext.Provider>
-    )
+      <UIStateContext.Provider value={store}>
+        <UIDistaptchContext.Provider value={{ addSnackbar, removeSnackbar }}>
+          {props.children}
+        </UIDistaptchContext.Provider>
+      </UIStateContext.Provider>
+    );
 }
 
-export const useUIState = () => useContext(UIStateContext);
+
+
+export const useUIState = () => useContext(UIStateContext)!;
+export const useDispatch = () => useContext(UIDistaptchContext)!
 
 export default UIProvider
