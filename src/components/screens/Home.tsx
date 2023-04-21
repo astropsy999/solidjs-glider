@@ -5,11 +5,11 @@ import MainLayout from '../layouts/MainLayout';
 import { Glide } from '../../types/Glide';
 import { createStore, produce } from 'solid-js/store';
 import { useAuthState } from '../context/auth';
-import { useDispatch } from '../context/ui';
+import { useUIDispatch } from '../context/ui';
 
 const HomeScreen: Component = () => {
   const {user} = useAuthState()!
-  const {addSnackbar} = useDispatch()
+  const { addSnackbar } = useUIDispatch();
   const [content, setContent] = createSignal('');
   const [glides, setGlides] = createStore({
     items: [] as Glide[]

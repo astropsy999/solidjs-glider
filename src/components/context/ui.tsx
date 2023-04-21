@@ -58,6 +58,6 @@ const UIProvider: ParentComponent = (props) => {
 
 
 export const useUIState = () => useContext(UIStateContext)!;
-export const useDispatch = () => useContext(UIDistaptchContext)!
+export const useUIDispatch = () => useContext(UIDistaptchContext)!
 
 export default UIProvider

@@ -1,12 +1,33 @@
 import { IoCloseCircle } from 'solid-icons/io';
-import { Component } from 'solid-js';
+import { Component, createEffect, createSignal, mergeProps, onMount } from 'solid-js';
 import { SnackbarMessage } from '../context/ui';
 
 type Props = {
   onClose: () => void
+  autoHideDuration?: number
 } & SnackbarMessage
 
-export const Snackbar: Component<Props> = (props) => {
+export const Snackbar: Component<Props> = (initialProps) => {
+
+  let props = mergeProps({autoHideDuration:2000}, initialProps)
+
+  const [duration, setDuration] = createSignal(props.autoHideDuration)
+  const completed = () => Math.floor(duration() / props.autoHideDuration * 100)
+
+  let timerId: number
+
+  onMount(()=>{
+    timerId = window.setInterval(()=>{
+      setDuration(duration() - 50)
+    },50)
+  })
+
+  createEffect(()=> {
+    if(duration() <= 0) {
+      window.clearInterval(timerId);
+      props.onClose()
+    }
+  })
 
   return (
     <div
@@ -24,7 +45,7 @@ export const Snackbar: Component<Props> = (props) => {
       </div>
       <div class="flex-it px-2 pb-3">{props.message}</div>
       <div
-        style={{ width: `100%` }}
+        style={{ width: `${completed()}%` }}
         class="bg-black opacity-40 text-right h-2"
       ></div>
     </div>
