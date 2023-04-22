@@ -1,5 +1,5 @@
 export type GliderInputEvent = InputEvent & {
-  currentTarget: HTMLInputElement;
+  currentTarget: HTMLInputElement | HTMLTextAreaElement;
   target: Element;
 };
 
@@ -9,6 +9,10 @@ export type FormErrors = {[key: string]: string[]}
 export type AuthForm = {
   email: string;
   password: string;
+} & Form
+
+export type MessengerForm = {
+  content: string
 } & Form
 
 export type RegisterForm = {
