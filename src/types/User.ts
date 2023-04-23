@@ -10,4 +10,4 @@ export interface User {
   following: DocumentReference[];
   followersCount: number;
   followingCount: number;
-}
+} 

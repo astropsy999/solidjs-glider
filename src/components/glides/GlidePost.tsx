@@ -23,7 +23,7 @@ const GlidePost: Component<Props> = (props) => {
           <div class="flex-it justify-center flex-grow mb-1">
             <div class="flex-it justify-between flex-row w-full">
               <div>
-                <span class="font-bold">{user.nicName}</span>
+                <span class="font-bold">{user.nickName}</span>
                 <span class="mx-2">&#8226;</span>
                 <span class="text-gray-400">2h</span>
               </div>

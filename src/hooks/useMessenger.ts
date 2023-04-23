@@ -35,9 +35,15 @@ const useMessenger = () => {
             uid: user!.uid
         }
         try {
-        await createGlide(glide);
+        const newGlide = await createGlide(glide);
+
+        newGlide.user = {
+            nickName: user?.nickName,
+            avatar: user?.avatar
+        }
         addSnackbar({ message: "Glide added", type: "success" });
         setForm({ content: '' });
+        return newGlide
 
         } catch (error) {
             const message = (error as FirebaseError).message

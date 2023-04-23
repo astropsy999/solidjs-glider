@@ -3,8 +3,14 @@ import useMessenger from '../../hooks/useMessenger';
 import useAuth from '../../hooks/useAuth';
 import { useAuthState } from '../context/auth';
 import { GliderInputEvent } from '../../types/Form';
+import { Glide } from '../../types/Glide';
+import { Component } from 'solid-js';
 
-const Messenger = () => {
+type Props = {
+  onGlideAdded: (g: Glide | undefined) => void
+}
+
+const Messenger:Component<Props> = (props) => {
   const { user } = useAuthState()!;
   const { handleInput, handleSubmit, form } = useMessenger();
   const autosize = (e: GliderInputEvent) => {
@@ -43,7 +49,7 @@ const Messenger = () => {
           </div>
           <div class="flex-it w-32 mt-3 cursor-pointer">
             <button
-              onClick={handleSubmit}
+              onClick={async() => {const glide = await handleSubmit(); props.onGlideAdded(glide)}}
               type="button"
               class="
                             disabled:cursor-not-allowed disabled:bg-gray-400

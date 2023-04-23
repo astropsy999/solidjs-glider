@@ -4,7 +4,7 @@ import { User } from './User';
 export interface Glide {
   id: string;
   content: string;
-  user: User | DocumentReference;
+  user: Partial<User> | DocumentReference;
   likesCount: number;
   subglidesCount: number;
   date: Timestamp;
