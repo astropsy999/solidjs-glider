@@ -4,6 +4,7 @@ import HomeScreen from '../components/screens/Home';
 import { lazy } from 'solid-js';
 import MainLayout from './layouts/MainLayout';
 import AuthLayout from './layouts/AuthLayout';
+import ProfileScreen from '../components/screens/Profile';
 const LoginScreen = lazy(() => import('../components/screens/Login'));
 const RegisterScreen = lazy(() => import('../components/screens/Register'));
 
@@ -12,6 +13,7 @@ const AppRoutes: Component<{}> = (props) => {
     <Routes>
       <Route path={'/'} component={MainLayout}>
         <Route path={'/'} component={HomeScreen} />
+        <Route path={'profile'} component={ProfileScreen} />
       </Route>
       <Route path={'/auth'} component={AuthLayout}>
         <Route path={'/login'} component={LoginScreen} />

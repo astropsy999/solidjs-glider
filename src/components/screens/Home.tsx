@@ -5,11 +5,10 @@ import Messenger from '../utils/Messenger';
 import PaginatedGlides from '../glides/paginatedGlides';
 
 const HomeScreen: Component = () => {
-  
   const {store, page, addGlide, loadGlides} = useGlides()
 
   return (
-    <MainLayout>
+    <MainLayout pageTitle="Home">
       <Messenger onGlideAdded={addGlide} />
       <div class="h-px bg-gray-700 my-1" />
       <PaginatedGlides page={page} pages={store.pages} loading={store.loading} loadMoreGlides={loadGlides}/>
