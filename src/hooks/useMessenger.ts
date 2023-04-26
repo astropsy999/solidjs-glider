@@ -55,7 +55,7 @@ const useMessenger = () => {
 
     }
 
-    return {handleInput, handleSubmit, form}
+    return {handleInput, handleSubmit, form, loading}
 }
 
 export default useMessenger

@@ -13,6 +13,10 @@ type AuthStateCtxValues = {
   user: User | null;
 };
 
+type AuthDispatch = {
+  updateUser: (u: Partial<User>) => void
+}
+
 const initialState = () => ({
  isAuthenticated: false,
  loading: true,
@@ -20,6 +24,7 @@ const initialState = () => ({
 }
 )
 const AuthStateContext = createContext<AuthStateCtxValues>();
+const AuthDispatchContext = createContext<AuthDispatch>()
 
 const AuthProvider: ParentComponent = (props) => {
 
@@ -50,20 +55,25 @@ const listenToAuthChanges = () => {
      setStore('loading', false);
   });
 }
-
-onCleanup(() => {
-
-})
+const updateUser = (user: Partial<User>) => {
+  Object.keys(user).forEach(userKey => {
+    const key = userKey as keyof User
+    setStore('user', key, user[key]!);
+  })
+}
 
 return (
   <AuthStateContext.Provider value={store}>
-    <Show when={store.loading} fallback={props.children}>
-      <Loader size={100} />
-    </Show>
+    <AuthDispatchContext.Provider value={{updateUser}}>
+      <Show when={store.loading} fallback={props.children}>
+        <Loader size={100} />
+      </Show>
+    </AuthDispatchContext.Provider>
   </AuthStateContext.Provider>
 );
 };
 
 export const useAuthState = () => useContext(AuthStateContext)
+export const useAuthDispatch = () => useContext(AuthDispatchContext)
 
 export default AuthProvider;

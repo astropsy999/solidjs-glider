@@ -1,10 +1,9 @@
 import { FaRegularImage } from 'solid-icons/fa';
+import { Component } from 'solid-js';
 import useMessenger from '../../hooks/useMessenger';
-import useAuth from '../../hooks/useAuth';
-import { useAuthState } from '../context/auth';
 import { GliderInputEvent } from '../../types/Form';
 import { Glide } from '../../types/Glide';
-import { Component } from 'solid-js';
+import { useAuthState } from '../context/auth';
 
 type Props = {
   onGlideAdded: (g: Glide | undefined) => void
@@ -12,9 +11,11 @@ type Props = {
 
 const Messenger:Component<Props> = (props) => {
   const { user } = useAuthState()!;
-  const { handleInput, handleSubmit, form } = useMessenger();
+  const { handleInput, handleSubmit, form, loading } = useMessenger();
+  const sendDisabled = () => loading() || form.content === '';
   const autosize = (e: GliderInputEvent) => {
     const el = e.currentTarget
+    
     
 
     el.style.height = "0px"
@@ -32,7 +33,10 @@ const Messenger:Component<Props> = (props) => {
         <div class="flex-it">
           <textarea
             value={form.content}
-            onInput={(e)=>{handleInput(e); autosize(e)}}
+            onInput={(e) => {
+              handleInput(e);
+              autosize(e);
+            }}
             name="content"
             rows="1"
             id="glide"
@@ -49,7 +53,11 @@ const Messenger:Component<Props> = (props) => {
           </div>
           <div class="flex-it w-32 mt-3 cursor-pointer">
             <button
-              onClick={async() => {const glide = await handleSubmit(); props.onGlideAdded(glide)}}
+              disabled={sendDisabled()}
+              onClick={async () => {
+                const glide = await handleSubmit();
+                props.onGlideAdded(glide);
+              }}
               type="button"
               class="
                             disabled:cursor-not-allowed disabled:bg-gray-400
