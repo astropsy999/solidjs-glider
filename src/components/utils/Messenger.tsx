@@ -4,24 +4,23 @@ import useMessenger from '../../hooks/useMessenger';
 import { GliderInputEvent } from '../../types/Form';
 import { Glide } from '../../types/Glide';
 import { useAuthState } from '../context/auth';
+import Button from './Button';
 
 type Props = {
-  onGlideAdded: (g: Glide | undefined) => void
-}
+  onGlideAdded: (g: Glide | undefined) => void;
+};
 
-const Messenger:Component<Props> = (props) => {
+const Messenger: Component<Props> = (props) => {
   const { user } = useAuthState()!;
   const { handleInput, handleSubmit, form, loading } = useMessenger();
   const sendDisabled = () => loading() || form.content === '';
   const autosize = (e: GliderInputEvent) => {
-    const el = e.currentTarget
-    
-    
+    const el = e.currentTarget;
 
-    el.style.height = "0px"
+    el.style.height = '0px';
     const { scrollHeight } = el;
-    el.style.height = scrollHeight + "px"
-  }
+    el.style.height = scrollHeight + 'px';
+  };
   return (
     <div class="flex-it py-1 px-4 flex-row">
       <div class="flex-it mr-4">
@@ -52,21 +51,15 @@ const Messenger:Component<Props> = (props) => {
             </div>
           </div>
           <div class="flex-it w-32 mt-3 cursor-pointer">
-            <button
+            <Button
               disabled={sendDisabled()}
               onClick={async () => {
                 const glide = await handleSubmit();
                 props.onGlideAdded(glide);
               }}
-              type="button"
-              class="
-                            disabled:cursor-not-allowed disabled:bg-gray-400
-                            bg-blue-400 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-full flex-it transition duration-200"
             >
-              <div class="flex-it flex-row text-sm font-bold text-white items-start justify-center">
-                <span>Glide It</span>
-              </div>
-            </button>
+              <span>Glide It</span>
+            </Button>
           </div>
         </div>
       </div>

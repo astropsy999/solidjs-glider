@@ -1,48 +1,100 @@
-import { DocumentReference, QueryConstraint, QueryDocumentSnapshot, Timestamp, addDoc, collection, doc, getDoc, getDocs, limit, orderBy, query, startAfter } from "firebase/firestore"
-import { db } from "../db"
-import { Glide } from "../types/Glide"
-import { User } from "../types/User"
+import {
+  DocumentReference,
+  QueryConstraint,
+  QueryDocumentSnapshot,
+  Timestamp,
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  limit,
+  onSnapshot,
+  orderBy,
+  query,
+  startAfter,
+  where,
+} from 'firebase/firestore';
+import { db } from '../db';
+import { Glide } from '../types/Glide';
+import { User } from '../types/User';
 
-export const getGlides =async (lastGlide: QueryDocumentSnapshot | null) => {
-    const constraints: QueryConstraint[] = [
-        orderBy("date", "desc"),
-        limit(10)
-    ]
+export const getGlides = async (
+  loggedInUser: User,
+  lastGlide: QueryDocumentSnapshot | null,
+) => {
+  const _loggedInUserDoc = doc(db, 'users', loggedInUser.uid);
+  const constraints: QueryConstraint[] = [orderBy('date', 'desc'), limit(10)];
 
-    if(!!lastGlide) {
-        constraints.push(startAfter(lastGlide))
-    }
-   const q = query(collection(db, 'glides'), ...constraints);
-   const qSnapshot = await getDocs(q)
-   const _lastGlide = qSnapshot.docs[qSnapshot.docs.length - 1]
+  if (loggedInUser.following.length > 0) {
+    constraints.push(
+      where('user', 'in', [...loggedInUser.following, _loggedInUserDoc]),
+    );
+  } else {
+    constraints.push(where('user', '==', _loggedInUserDoc));
+  }
 
-  const glides = await Promise.all(qSnapshot.docs.map(async doc => {
-    const glide = doc.data() as Glide
+  if (!!lastGlide) {
+    constraints.push(startAfter(lastGlide));
+  }
+  const q = query(collection(db, 'glides'), ...constraints);
+  const qSnapshot = await getDocs(q);
+  const _lastGlide = qSnapshot.docs[qSnapshot.docs.length - 1];
 
-    const userSnap = await getDoc(glide.user as DocumentReference)
+  const glides = await Promise.all(
+    qSnapshot.docs.map(async (doc) => {
+      const glide = doc.data() as Glide;
 
-    glide.user = userSnap.data() as User
-    return {...glide, id: doc.id}
-  }))
+      const userSnap = await getDoc(glide.user as DocumentReference);
+
+      glide.user = userSnap.data() as User;
+      return { ...glide, id: doc.id };
+    }),
+  );
 
   return { glides, lastGlide: _lastGlide };
-}
+};
+
+export const subscribeToGlides = (
+  loggedInUser: User,
+  getCallback: (g: Glide[]) => void,
+) => {
+  const _collection = collection(db, 'glides');
+  const constraints = [
+    where('date', '>', Timestamp.now()),
+    where('user', 'in', loggedInUser.following),
+  ];
+
+  const q = query(_collection, ...constraints);
+  return onSnapshot(q, async (querySnapshot) => {
+    const glides = await Promise.all(
+      querySnapshot.docs.map(async (doc) => {
+        const glide = doc.data() as Glide;
+        const userSnap = await getDoc(glide.user as DocumentReference);
+        glide.user = userSnap.data() as User;
+        return { ...glide, id: doc.id };
+      }),
+    );
+    getCallback(glides);
+  });
+};
 
 export const createGlide = async (form: {
-    content: string, uid: string
+  content: string;
+  uid: string;
 }): Promise<Glide> => {
-    const userRef = doc(db, "users", form.uid)
-    const glideToStore = {
-        ...form,
-        user: userRef,
-        likesCount: 0,
-        subglidesCount: 0,
-        date: Timestamp.now()
-    }
+  const userRef = doc(db, 'users', form.uid);
+  const glideToStore = {
+    ...form,
+    user: userRef,
+    likesCount: 0,
+    subglidesCount: 0,
+    date: Timestamp.now(),
+  };
 
-    const glidesCollection = collection(db, "glides")
+  const glidesCollection = collection(db, 'glides');
 
-    const added = await addDoc(glidesCollection, glideToStore)
+  const added = await addDoc(glidesCollection, glideToStore);
 
-    return {...glideToStore, id: added.id}
-}
+  return { ...glideToStore, id: added.id };
+};

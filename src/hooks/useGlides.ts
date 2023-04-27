@@ -1,78 +1,118 @@
-import { createStore, produce } from "solid-js/store"
-import { Glide } from "../types/Glide"
-import { createSignal, onMount } from "solid-js"
-import { getGlides } from "../api/glide"
-import { FirebaseError } from "firebase/app"
-import { QueryDocumentSnapshot } from "firebase/firestore"
+import { FirebaseError } from 'firebase/app';
+import { QueryDocumentSnapshot, Unsubscribe } from 'firebase/firestore';
+import { createSignal, onMount } from 'solid-js';
+import { createStore, produce } from 'solid-js/store';
+import * as api from '../api/glide';
+import { Glide } from '../types/Glide';
+import { useAuthState } from './../components/context/auth';
 
 type State = {
   pages: {
     [key: string]: { glides: Glide[] };
   };
   loading: boolean;
-  lastGlide: QueryDocumentSnapshot | null
+  lastGlide: QueryDocumentSnapshot | null;
+  freshGlides: Glide[];
 };
 
-const createInitState = () => ({pages: {}, loading: false, lastGlide: null})
+const createInitState = () => ({
+  pages: {},
+  loading: false,
+  lastGlide: null,
+  freshGlides: [],
+});
 
 const useGlides = () => {
-    const [page, setPage] = createSignal(1)
-    const [store, setStore] = createStore<State>(createInitState())
+  const [page, setPage] = createSignal(1);
+  const [store, setStore] = createStore<State>(createInitState());
+  const { user } = useAuthState()!;
 
-    onMount(()=> {
-        loadGlides()
-    })
+  let unSubscribe: Unsubscribe;
 
-    const loadGlides = async () => {
-        const _page = page()
+  onMount(() => {
+    loadGlides();
+  });
 
-        if(_page > 1 && !store.lastGlide) return
-        setStore("loading", true)
+  const loadGlides = async () => {
+    const _page = page();
 
-        try {
-        
-            const {glides, lastGlide} = await getGlides(store.lastGlide);
+    if (_page > 1 && !store.lastGlide) return;
+    setStore('loading', true);
 
-            if(glides.length > 0) {
-                setStore(produce(store => {
-                    store.pages[_page] = {glides}
-                }))
+    try {
+      const { glides, lastGlide } = await api.getGlides(user!, store.lastGlide);
 
-                setPage(_page + 1)
-            }
+      if (glides.length > 0) {
+        setStore(
+          produce((store) => {
+            store.pages[_page] = { glides };
+          }),
+        );
 
-            setStore("lastGlide", lastGlide)
-            
-        } catch (error) {
-            const message = (error as FirebaseError).message
-            console.log('error: ', message);
-            
-        }finally {
-             setStore('loading', false);
+        setPage(_page + 1);
+      }
+
+      setStore('lastGlide', lastGlide);
+    } catch (error) {
+      const message = (error as FirebaseError).message;
+      console.log('error: ', message);
+    } finally {
+      setStore('loading', false);
+    }
+  };
+
+  const subscribeToGlides = () => {
+    if (user?.following.length == 0) return;
+    unSubscribe = api.subscribeToGlides(user!, (freshGlides: Glide[]) => {
+      setStore('freshGlides', freshGlides);
+      console.log(store.freshGlides);
+    });
+  };
+
+  const unsubscribeFromGlides = () => {
+    if (!!unSubscribe) {
+      unSubscribe();
+    }
+  };
+
+  const resubscribe = () => {
+    unsubscribeFromGlides();
+    subscribeToGlides();
+  };
+
+  const addGlide = (glide: Glide | undefined) => {
+    if (!glide) return;
+    const page = 1;
+
+    setStore(
+      produce((store) => {
+        if (!store.pages[page]) {
+          store.pages[page] = { glides: [] };
         }
-    }
 
-    const addGlide = (glide: Glide | undefined) => {
-        if(!glide) return
-        const page = 1
+        // store.pages[page].glides = [{...glide}, ...store.pages[page].glides]
+        store.pages[page].glides.unshift({ ...glide });
+      }),
+    );
+  };
 
-        setStore(produce(store => {
-            if(!store.pages[page]) {
-                store.pages[page] = {glides: []}
-            }
+  const displayFreshGlides = () => {
+    store.freshGlides.forEach((fresGlide) => addGlide(fresGlide));
 
-            // store.pages[page].glides = [{...glide}, ...store.pages[page].glides]
-            store.pages[page].glides.unshift({...glide})
-        }))
-    }
+    setStore('freshGlides', []);
+    resubscribe();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
-    return {
-      loadGlides,
-      store,
-      page,
-      addGlide,
-    };
+  return {
+    loadGlides,
+    store,
+    page,
+    addGlide,
+    subscribeToGlides,
+    unsubscribeFromGlides,
+    displayFreshGlides,
+  };
+};
 
-}
-
-export default useGlides
+export default useGlides;
