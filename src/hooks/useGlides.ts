@@ -62,7 +62,9 @@ const useGlides = () => {
   };
 
   const subscribeToGlides = () => {
-    if (user?.following.length == 0) return;
+    if (user?.following.length == 0) {
+      return;
+    }
     unSubscribe = api.subscribeToGlides(user!, (freshGlides: Glide[]) => {
       setStore('freshGlides', freshGlides);
       console.log(store.freshGlides);
@@ -97,7 +99,9 @@ const useGlides = () => {
   };
 
   const displayFreshGlides = () => {
-    store.freshGlides.forEach((fresGlide) => addGlide(fresGlide));
+    store.freshGlides.forEach((fresGlide) => {
+      addGlide(fresGlide);
+    });
 
     setStore('freshGlides', []);
     resubscribe();
