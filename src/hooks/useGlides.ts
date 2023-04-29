@@ -3,15 +3,10 @@ import { QueryDocumentSnapshot, Unsubscribe } from 'firebase/firestore';
 import { createSignal, onMount } from 'solid-js';
 import { createStore, produce } from 'solid-js/store';
 import * as api from '../api/glide';
-import { Glide } from '../types/Glide';
+import { Glide, UseGlideState } from '../types/Glide';
 import { useAuthState } from './../components/context/auth';
 
-type State = {
-  pages: {
-    [key: string]: { glides: Glide[] };
-  };
-  loading: boolean;
-  lastGlide: QueryDocumentSnapshot | null;
+type State = UseGlideState & {
   freshGlides: Glide[];
 };
 
