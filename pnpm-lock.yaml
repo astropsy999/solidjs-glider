@@ -5,6 +5,7 @@ specifiers:
   '@tailwindcss/forms': ^0.5.3
   autoprefixer: ^10.4.14
   firebase: ^9.19.1
+  moment: ^2.29.4
   postcss: ^8.4.21
   solid-icons: ^1.0.4
   solid-js: ^1.6.10
@@ -16,6 +17,7 @@ specifiers:
 dependencies:
   '@solidjs/router': 0.8.2_solid-js@1.6.10
   firebase: 9.19.1
+  moment: 2.29.4
   solid-icons: 1.0.4_solid-js@1.6.10
   solid-js: 1.6.10
 
@@ -1671,6 +1673,10 @@ packages:
   /minimist/1.2.8:
     resolution: {integrity: sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==}
     dev: true
+
+  /moment/2.29.4:
+    resolution: {integrity: sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==}
+    dev: false
 
   /ms/2.1.2:
     resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}

@@ -13,19 +13,28 @@ import { Glide } from '../../types/Glide';
 
 const GlideDetail: Component = () => {
   const params = useParams();
-  const { store, page, loadGlides, addGlide } = useSubglides()!;
-  console.log('store: ', store);
-  const [data, { mutate }] = createResource(() =>
-    getGlideById(params.id, params.uid),
-  );
-  const user = () => data()?.user as User;
+
+  const onGlideLoaded = (glide: Glide) => {
+    resetPagination();
+    loadGlides(glide.lookup!);
+  };
+
+  const [data, { mutate, refetch }] = createResource(async () => {
+    const glide = await getGlideById(params.id, params.uid);
+    onGlideLoaded(glide);
+    return glide;
+  });
 
   createEffect(() => {
-    const glide = data();
-    if (!data.loading && !!glide && !!glide.lookup) {
-      loadGlides(glide.lookup);
+    if (!data.loading && data()?.id !== params.id) {
+      refetch();
     }
   });
+
+  const { store, page, loadGlides, addGlide, resetPagination } =
+    useSubglides()!;
+
+  const user = () => data()?.user as User;
 
   const onGlideAdded = (newGlide?: Glide) => {
     const glide = data()!;
@@ -64,7 +73,10 @@ const GlideDetail: Component = () => {
         page={page}
         pages={store.pages}
         loading={store.loading}
-        loadMoreGlides={() => Promise.resolve()}
+        loadMoreGlides={() => {
+          const lookup = data()?.lookup!;
+          return loadGlides(lookup);
+        }}
       />
     </MainLayout>
   );

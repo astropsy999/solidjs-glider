@@ -78,13 +78,20 @@ const getGlides = async (
   return { glides, lastGlide: _lastGlide };
 };
 
-const getSubglides = async (glideLookup: string) => {
+const getSubglides = async (
+  glideLookup: string,
+  lastGlide: QueryDocumentSnapshot | null,
+) => {
   const ref = doc(db, glideLookup);
   const _collection = collection(ref, 'glides');
 
-  const constraints = [orderBy('date', 'desc'), limit(10)];
+  const constraints: QueryConstraint[] = [orderBy('date', 'desc'), limit(10)];
+  if (lastGlide !== null) {
+    constraints.push(startAfter(lastGlide));
+  }
   const q = query(_collection, ...constraints);
   const qSnapshot = await getDocs(q);
+  const _lastGlide = qSnapshot.docs[qSnapshot.docs.length - 1];
 
   const glides = await Promise.all(
     qSnapshot.docs.map(async (doc) => {
@@ -97,7 +104,7 @@ const getSubglides = async (glideLookup: string) => {
   );
   return {
     glides,
-    lastGlide: null,
+    lastGlide: _lastGlide,
   };
 };
 

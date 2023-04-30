@@ -21,7 +21,10 @@ const useSubglides = () => {
     setStore('loading', true);
 
     try {
-      const { glides, lastGlide } = await getSubglides(glideLookup);
+      const { glides, lastGlide } = await getSubglides(
+        glideLookup,
+        store.lastGlide,
+      );
       if (glides.length > 0) {
         setStore(
           produce((store) => {
@@ -55,11 +58,25 @@ const useSubglides = () => {
       }),
     );
   };
+  const resetPagination = () => {
+    setStore(
+      produce((store) => {
+        for (let i = 1; i <= page(); i++) {
+          store.pages[i] = {
+            glides: [],
+          };
+        }
+        store.lastGlide = null;
+      }),
+    );
+    setPage(1);
+  };
   return {
     store,
     loadGlides,
     page,
     addGlide,
+    resetPagination,
   };
 };
 
