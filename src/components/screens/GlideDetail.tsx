@@ -47,6 +47,8 @@ const GlideDetail: Component = () => {
 
   return (
     <MainLayout
+      onGlideAdded={onGlideAdded}
+      selectedGlide={data()}
       pageTitle={
         <div onClick={() => history.back()}>
           <div class="flex-it flex-row items-center text-xl cursor-pointer">

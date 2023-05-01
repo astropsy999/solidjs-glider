@@ -9,7 +9,7 @@ const ProfileScreen: Component = () => {
   const authState = useAuthState()!;
 
   return (
-    <MainLayout pageTitle="Profile">
+    <MainLayout pageTitle="Profile" onGlideAdded={() => {}}>
       <div class="flex-it py-1">
         <div class="mt-6 pb-6 border-b border-gray-600">
           <div class="flex-it flex-row items-center px-4">
@@ -36,7 +36,9 @@ const ProfileScreen: Component = () => {
             when={users().length > 0}
             fallback={
               <div class="flex-it">
-                <div class="bg-yellow-500 mt-6 p-2 rounded-lg mx-4">You followed all users in the world...</div>
+                <div class="bg-yellow-500 mt-6 p-2 rounded-lg mx-4">
+                  You followed all users in the world...
+                </div>
               </div>
             }
           >
