@@ -1,10 +1,16 @@
 import { FirebaseError } from 'firebase/app';
 import { createStore } from 'solid-js/store';
-import { GliderInputEvent, MessengerForm } from '../types/Form';
+import { GliderInputEvent, MessengerForm, UploadImage } from '../types/Form';
 import { useAuthState } from '../components/context/auth';
 import { useUIDispatch } from '../components/context/ui';
 import { createSignal } from 'solid-js';
-import { createGlide } from '../api/glide';
+import { createGlide, uploadImage } from '../api/glide';
+
+const defaultImage = () => ({
+  buffer: new ArrayBuffer(0),
+  name: '',
+  previewUrl: '',
+});
 
 const useMessenger = (answerTo?: string) => {
   const [form, setForm] = createStore<MessengerForm>({
@@ -12,6 +18,7 @@ const useMessenger = (answerTo?: string) => {
   });
   const [loading, setLoading] = createSignal(false);
   const { addSnackbar } = useUIDispatch();
+  const [image, setImage] = createSignal<UploadImage>(defaultImage());
 
   const { isAuthenticated, user } = useAuthState()!;
 
@@ -28,12 +35,20 @@ const useMessenger = (answerTo?: string) => {
 
     setLoading(true);
 
-    const glide = {
+    const glideForm = {
       ...form,
       uid: user!.uid,
     };
     try {
-      const newGlide = await createGlide(glide, answerTo);
+      //check if image is attached
+      if (image().buffer.byteLength > 0) {
+        const downloadUrl = await uploadImage(image());
+        glideForm.mediaUrl = downloadUrl;
+      }
+      //upload image
+      //return url where the image is uploaded
+
+      const newGlide = await createGlide(glideForm, answerTo);
 
       newGlide.user = {
         nickName: user?.nickName,
@@ -41,6 +56,7 @@ const useMessenger = (answerTo?: string) => {
       };
       addSnackbar({ message: 'Glide added', type: 'success' });
       setForm({ content: '' });
+      setImage(defaultImage());
       return newGlide;
     } catch (error) {
       const message = (error as FirebaseError).message;
@@ -50,7 +66,7 @@ const useMessenger = (answerTo?: string) => {
     }
   };
 
-  return { handleInput, handleSubmit, form, loading };
+  return { handleInput, handleSubmit, form, loading, image, setImage };
 };
 
 export default useMessenger;

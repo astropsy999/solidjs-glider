@@ -1,19 +1,31 @@
+export type UploadImage = {
+  buffer: ArrayBuffer;
+  name: string;
+  previewUrl: string;
+};
+
+export type GliderFileEvent = {
+  target: Element & { files?: FileList };
+  currentTarget: HTMLInputElement;
+};
+
 export type GliderInputEvent = InputEvent & {
   currentTarget: HTMLInputElement | HTMLTextAreaElement;
   target: Element;
 };
 
-export type Form = {[key: string]: string}
-export type FormErrors = {[key: string]: string[]}
+export type Form = { [key: string]: string };
+export type FormErrors = { [key: string]: string[] };
 
 export type AuthForm = {
   email: string;
   password: string;
-} & Form
+} & Form;
 
 export type MessengerForm = {
-  content: string
-} & Form
+  content: string;
+  mediaUrl?: string;
+} & Form;
 
 export type RegisterForm = {
   fullName: string;
@@ -22,4 +34,4 @@ export type RegisterForm = {
   passwordConfirmation: string;
 } & AuthForm;
 
-export type SubmitCallback<T extends Form> = (f: T) => void
+export type SubmitCallback<T extends Form> = (f: T) => void;
