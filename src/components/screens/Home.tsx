@@ -5,6 +5,7 @@ import Messenger from '../utils/Messenger';
 import PaginatedGlides from '../glides/PaginatedGlides';
 import { Portal } from 'solid-js/web';
 import Button from '../utils/Button';
+import { usePersistence } from '../context/persistence';
 
 const HomeScreen: Component = () => {
   const {
@@ -16,6 +17,9 @@ const HomeScreen: Component = () => {
     unsubscribeFromGlides,
     displayFreshGlides,
   } = useGlides();
+
+  const persistence = usePersistence()!;
+
   onMount(() => {
     subscribeToGlides();
   });

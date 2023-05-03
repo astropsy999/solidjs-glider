@@ -6,6 +6,7 @@ import { Component, Show } from 'solid-js';
 import { Glide } from '../../types/Glide';
 import { User } from '../../types/User';
 import moment from 'moment';
+import { usePersistence } from '../context/persistence';
 
 type Props = {
   glide: Glide;
@@ -16,6 +17,7 @@ const GlidePost: Component<Props> = (props) => {
   const glide = () => props.glide;
   const user = () => glide().user as User;
   const hasUrl = () => !!glide().mediaUrl;
+  const persistance = usePersistence()!;
 
   return (
     <div class="flex-it p-4 border-b-1 border-solid border-gray-700">
@@ -27,6 +29,7 @@ const GlidePost: Component<Props> = (props) => {
         </div>
         <article
           onClick={() => {
+            persistance.setValue(`selectedGlide-${glide().id}`, glide());
             navigate(`/${glide().uid}/glide/${glide().id}`);
           }}
           class="flex-it flex-grow flex-shrink cursor-pointer"

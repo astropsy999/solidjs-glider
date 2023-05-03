@@ -1,6 +1,12 @@
 import { useParams } from '@solidjs/router';
 import { FaSolidArrowLeft } from 'solid-icons/fa';
-import { Component, Show, createEffect, createResource } from 'solid-js';
+import {
+  Component,
+  Show,
+  createEffect,
+  createResource,
+  onMount,
+} from 'solid-js';
 import { getGlideById } from '../../api/glide';
 import useSubglides from '../../hooks/useSubglides';
 import { User } from '../../types/User';
@@ -10,9 +16,12 @@ import { CenteredDataLoader } from '../utils/DataLoader';
 import Messenger from '../utils/Messenger';
 import PaginatedGlides from '../glides/PaginatedGlides';
 import { Glide } from '../../types/Glide';
+import { usePersistence } from '../context/persistence';
 
 const GlideDetail: Component = () => {
   const params = useParams();
+
+  const persistence = usePersistence()!;
 
   const onGlideLoaded = (glide: Glide) => {
     resetPagination();
@@ -20,7 +29,14 @@ const GlideDetail: Component = () => {
   };
 
   const [data, { mutate, refetch }] = createResource(async () => {
-    const glide = await getGlideById(params.id, params.uid);
+    const selectedGlide = persistence.getValue<Glide>(
+      `selectedGlide-${params.id}`,
+    );
+    const glide = await persistence.useRevalidate(
+      `selectedGlide-${params.id}`,
+      () => getGlideById(params.id, params.uid),
+    );
+
     onGlideLoaded(glide);
     return glide;
   });
