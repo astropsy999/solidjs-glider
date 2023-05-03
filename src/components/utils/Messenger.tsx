@@ -66,6 +66,7 @@ const Messenger: Component<Props> = (initialprops) => {
         </div>
         <Show when={image().previewUrl.length > 0}>
           <div class="flex-it max-w-52 p-4">
+            ``
             <img src={image().previewUrl} alt="" />
           </div>
         </Show>
