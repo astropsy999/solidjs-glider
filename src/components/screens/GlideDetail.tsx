@@ -35,6 +35,9 @@ const GlideDetail: Component = () => {
     const glide = await persistence.useRevalidate(
       `selectedGlide-${params.id}`,
       () => getGlideById(params.id, params.uid),
+      (latestGlide) => {
+        mutate(latestGlide);
+      },
     );
 
     onGlideLoaded(glide);
@@ -54,10 +57,12 @@ const GlideDetail: Component = () => {
 
   const onGlideAdded = (newGlide?: Glide) => {
     const glide = data()!;
-    mutate({
+    const glideWithNewCount = {
       ...glide,
       subglidesCount: glide.subglidesCount + 1,
-    });
+    };
+    mutate(glideWithNewCount);
+    persistence.setValue(`selectedGlide-${params.id}`, glideWithNewCount);
     addGlide(newGlide);
   };
 

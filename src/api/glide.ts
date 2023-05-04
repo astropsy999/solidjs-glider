@@ -139,7 +139,7 @@ const subscribeToGlides = (
         const glide = doc.data() as Glide;
         const userSnap = await getDoc(glide.user as DocumentReference);
         glide.user = userSnap.data() as User;
-        return { ...glide, id: doc.id };
+        return { ...glide, id: doc.id, lookup: doc.ref.path };
       }),
     );
 
