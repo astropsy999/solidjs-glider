@@ -24,6 +24,7 @@ import { User } from '../types/User';
 import { UploadImage } from '../types/Form';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 
+// Функция для загрузки изображения на сервер и получения ссылки на него
 const uploadImage = async (image: UploadImage) => {
   const storage = getStorage();
   const storageRef = ref(storage, image.name);
@@ -34,6 +35,7 @@ const uploadImage = async (image: UploadImage) => {
   return downloadUrl;
 };
 
+// Функция для получения информации о гайде по его id и uid пользователя
 const getGlideById = async (id: string, uid: string) => {
   const userDocRef = doc(db, 'users', uid);
   const userGlideRef = doc(userDocRef, 'glides', id);
@@ -53,6 +55,7 @@ const getGlideById = async (id: string, uid: string) => {
   return glide;
 };
 
+// Функция для получения списка гайдов пользователя или пользователей, на которых он подписан
 const getGlides = async (
   loggedInUser: User,
   lastGlide: QueryDocumentSnapshot | null,
@@ -90,6 +93,7 @@ const getGlides = async (
   return { glides, lastGlide: _lastGlide };
 };
 
+// Функция для получения подгайдов (ответов) на определенный гайд
 const getSubglides = async (
   glideLookup: string,
   lastGlide: QueryDocumentSnapshot | null,
@@ -120,6 +124,7 @@ const getSubglides = async (
   };
 };
 
+// Функция для подписки на гайды пользователей, на которых пользователь подписан
 const subscribeToGlides = (
   loggedInUser: User,
   getCallback: (g: Glide[]) => void,
@@ -147,6 +152,7 @@ const subscribeToGlides = (
   });
 };
 
+// Функция для получения коллекции гайдов, на которые отвечает определенный гайд
 const getGlideCollection = (answerTo?: string) => {
   let glideCollection;
 
@@ -160,6 +166,7 @@ const getGlideCollection = (answerTo?: string) => {
   return glideCollection;
 };
 
+// Функция для создания нового гайда или ответа на существующий гайд
 const createGlide = async (
   form: {
     content: string;
@@ -194,6 +201,7 @@ const createGlide = async (
   return { ...glideToStore, id: added.id, lookup: added.path };
 };
 
+// Экспорт функций для использования в других частях приложения
 export {
   createGlide,
   getGlides,
